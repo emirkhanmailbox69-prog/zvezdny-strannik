@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw } from 'lucide-react'
 import { GameCard } from '../components/GameCard'
 import { CheckScreen } from './CheckScreen'
 import type { GameState, Section } from '../types'
+import { CombatScreen } from './CombatScreen'
 
 interface Props {
   state: GameState
@@ -96,8 +97,15 @@ export function Game({ state, section, onChoose, onReset }: Props) {
             <button onClick={onReset} className="ml-2 underline">Начать заново</button>
           </div>
         ) : section.type === 'check' && section.check ? (
-          <CheckScreen state={state} section={section} onChoose={onChoose} />
-        ) : (
+  <CheckScreen state={state} section={section} onChoose={onChoose} />
+) : section.type === 'combat' && section.combat ? (
+  <CombatScreen
+    state={state}
+    section={section}
+    onWin={onChoose}
+    onLose={onReset}
+  />
+) : (
           <AnimatePresence mode="wait">
             <motion.div
               key={state.currentSection}
