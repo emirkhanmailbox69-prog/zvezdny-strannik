@@ -21,15 +21,14 @@ export function Game({ state, section, onChoose, onReset }: Props) {
   }, [state.currentSection])
 
   return (
-        <div
+    <div
       className="fixed inset-0 flex flex-col"
       style={{
-        paddingTop: 'max(env(safe-area-inset-top), 60px)',
+        paddingTop: 'max(env(safe-area-inset-top), 72px)',
         paddingLeft: 'max(env(safe-area-inset-left), 0px)',
         paddingRight: 'max(env(safe-area-inset-right), 0px)',
       }}
     >
-      {/* HEADER — flex-none, всегда сверху */}
       <header className="flex-none bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5">
         <div className="max-w-2xl mx-auto px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
@@ -85,11 +84,11 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
-      {/* CONTENT — flex-1, скроллится отдельно */}
+      {/* min-h-0 — ключевой фикс. Без него flexbox не даёт скроллить */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto overscroll-contain"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
       >
         <div className="max-w-2xl mx-auto px-4 py-5 space-y-5">
           {!section ? (
@@ -125,10 +124,9 @@ export function Game({ state, section, onChoose, onReset }: Props) {
                     {section.choices?.map((c, i) => (
                       <motion.button
                         key={i}
-                        whileHover={{ x: 4 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => onChoose(c.next)}
-                        className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
+                        className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 active:bg-white/15 hover:border-teal-400/40 p-4 transition-colors flex items-start justify-between gap-3"
                       >
                         <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
                           {c.label}
