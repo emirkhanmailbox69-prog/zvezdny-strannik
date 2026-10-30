@@ -1,0 +1,4 @@
+npm run dev
+
+
+cd C:\Users\COMP-2059\zvezdny-strannik
