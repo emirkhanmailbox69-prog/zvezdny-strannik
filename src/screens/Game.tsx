@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { GameCard } from '../components/GameCard'
+import { CheckScreen } from './CheckScreen'
 import type { GameState, Section } from '../types'
 
 interface Props {
@@ -16,10 +17,7 @@ export function Game({ state, section, onChoose, onReset }: Props) {
 
   return (
     <div className="min-h-full max-w-2xl mx-auto px-4 py-6 space-y-5">
-      {/* ПАНЕЛЬ СТАТУСА (СВЕРХУ) */}
       <header className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 space-y-3">
-        
-        {/* Имя и кнопка Статус */}
         <div className="flex items-center justify-between">
           <div className="text-sm font-medium text-white/90 uppercase tracking-wider">
             {state.captain.name}
@@ -32,7 +30,6 @@ export function Game({ state, section, onChoose, onReset }: Props) {
           </button>
         </div>
 
-        {/* Характеристики Капитана */}
         <div className="grid grid-cols-3 gap-2 text-center">
           <div>
             <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Мастерство</div>
@@ -50,10 +47,8 @@ export function Game({ state, section, onChoose, onReset }: Props) {
           </div>
         </div>
 
-        {/* Разделитель */}
         <div className="h-px bg-white/5" />
 
-        {/* Характеристики Корабля */}
         <div>
           <div className="text-[10px] text-center text-teal-300/70 uppercase tracking-widest mb-2">
             Характеристики корабля
@@ -75,12 +70,13 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
-      {/* ТЕКСТ СЕКЦИИ И ВЫБОР */}
       {!section ? (
         <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
           Страница потеряна в пространстве.
           <button onClick={onReset} className="ml-2 underline">Начать заново</button>
         </div>
+      ) : section.type === 'check' && section.check ? (
+        <CheckScreen state={state} section={section} onChoose={onChoose} />
       ) : (
         <AnimatePresence mode="wait">
           <motion.div
