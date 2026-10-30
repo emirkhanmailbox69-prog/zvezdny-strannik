@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { GameCard } from '../components/GameCard'
@@ -14,22 +14,24 @@ interface Props {
 
 export function Game({ state, section, onChoose, onReset }: Props) {
   const [showStatus, setShowStatus] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Скролл в начало при смене секции
   useEffect(() => {
-    const root = document.getElementById('root')
-    if (root) {
-      root.scrollTop = 0
-    }
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }, [state.currentSection])
 
   return (
-    <div className="min-h-full max-w-2xl mx-auto">
-      <header
-        className="sticky z-30 bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
-        style={{ top: 'env(safe-area-inset-top)' }}
-      >
-        <div className="px-4 py-3 space-y-3">
+    <div
+      className="fixed inset-0 flex flex-col"
+      style={{
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingLeft: 'env(safe-area-inset-left)',
+        paddingRight: 'env(safe-area-inset-right)',
+      }}
+    >
+      {/* HEADER — flex-none, всегда сверху */}
+      <header className="flex-none bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5">
+        <div className="max-w-2xl mx-auto px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium text-white/90 uppercase tracking-wider">
               {state.captain.name}
@@ -83,62 +85,66 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
+      {/* CONTENT — flex-1, скроллится отдельно */}
       <div
-        className="px-4 py-5 space-y-5"
-        style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto overscroll-contain"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
-        {!section ? (
-          <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
-            Страница потеряна в пространстве.
-            <button onClick={onReset} className="ml-2 underline">Начать заново</button>
-          </div>
-        ) : section.type === 'check' && section.check ? (
-          <CheckScreen state={state} section={section} onChoose={onChoose} />
-        ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={state.currentSection}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35 }}
-              className="space-y-5"
-            >
-              <p className="text-[17px] leading-relaxed text-white/85 whitespace-pre-line">
-                {section.text}
-              </p>
+        <div className="max-w-2xl mx-auto px-4 py-5 space-y-5">
+          {!section ? (
+            <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
+              Страница потеряна в пространстве.
+              <button onClick={onReset} className="ml-2 underline">Начать заново</button>
+            </div>
+          ) : section.type === 'check' && section.check ? (
+            <CheckScreen state={state} section={section} onChoose={onChoose} />
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={state.currentSection}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="space-y-5"
+              >
+                <p className="text-[17px] leading-relaxed text-white/85 whitespace-pre-line">
+                  {section.text}
+                </p>
 
-              {section.ending ? (
-                <button
-                  onClick={onReset}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-teal-400/30 bg-teal-400/10 text-teal-300 px-4 py-3 hover:bg-teal-400/20 transition-colors"
-                >
-                  <RotateCcw size={16} /> Начать заново
-                </button>
-              ) : (
-                <div className="space-y-2">
-                  {section.choices?.map((c, i) => (
-                    <motion.button
-                      key={i}
-                      whileHover={{ x: 4 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => onChoose(c.next)}
-                      className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
-                    >
-                      <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
-                        {c.label}
-                      </span>
-                      <ArrowRight
-                        size={16}
-                        className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
-                      />
-                    </motion.button>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        )}
+                {section.ending ? (
+                  <button
+                    onClick={onReset}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border border-teal-400/30 bg-teal-400/10 text-teal-300 px-4 py-3 hover:bg-teal-400/20 transition-colors"
+                  >
+                    <RotateCcw size={16} /> Начать заново
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    {section.choices?.map((c, i) => (
+                      <motion.button
+                        key={i}
+                        whileHover={{ x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => onChoose(c.next)}
+                        className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
+                      >
+                        <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
+                          {c.label}
+                        </span>
+                        <ArrowRight
+                          size={16}
+                          className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
+                        />
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
       </div>
 
       <GameCard state={state} open={showStatus} onClose={() => setShowStatus(false)} />
