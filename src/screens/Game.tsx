@@ -16,9 +16,14 @@ export function Game({ state, section, onChoose, onReset }: Props) {
 
   return (
     <div className="min-h-full max-w-2xl mx-auto px-4 py-6 space-y-5">
+      {/* ПАНЕЛЬ СТАТУСА (СВЕРХУ) */}
       <header className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 space-y-3">
-        <div className="flex items-baseline justify-between">
-          <div className="text-base font-medium text-white">{state.captain.name}</div>
+        
+        {/* Имя и кнопка Статус */}
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-medium text-white/90 uppercase tracking-wider">
+            {state.captain.name}
+          </div>
           <button
             onClick={() => setShowStatus(true)}
             className="text-xs text-teal-300 hover:text-teal-200 transition-colors"
@@ -27,47 +32,50 @@ export function Game({ state, section, onChoose, onReset }: Props) {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Мастерство</div>
+        {/* Характеристики Капитана */}
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Мастерство</div>
             <div className="text-white font-semibold text-sm">{state.captain.mastery}</div>
           </div>
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Выносливость</div>
+          <div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Выносливость</div>
             <div className="text-white font-semibold text-sm">
-              {state.captain.stamina}/{state.captain.maxStamina}
-            </div>
-            <div className="h-1 mt-1 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full bg-rose-400 transition-all"
-                style={{ width: `${(state.captain.stamina / state.captain.maxStamina) * 100}%` }}
-              />
+              {state.captain.stamina} <span className="text-white/30 text-xs">/ {state.captain.maxStamina}</span>
             </div>
           </div>
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Удача</div>
+          <div>
+            <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Удача</div>
             <div className="text-white font-semibold text-sm">{state.luck}</div>
           </div>
         </div>
 
+        {/* Разделитель */}
         <div className="h-px bg-white/5" />
 
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Вооружение</div>
-            <div className="text-white font-semibold text-sm">{state.ship.weapon}</div>
+        {/* Характеристики Корабля */}
+        <div>
+          <div className="text-[10px] text-center text-teal-300/70 uppercase tracking-widest mb-2">
+            Характеристики корабля
           </div>
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Защита</div>
-            <div className="text-white font-semibold text-sm">{state.ship.defense}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-white/40 mb-0.5">Воля</div>
-            <div className="text-teal-300 font-semibold text-sm">{state.will}</div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Вооружение</div>
+              <div className="text-white font-semibold text-sm">{state.ship.weapon}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Защита</div>
+              <div className="text-white font-semibold text-sm">{state.ship.defense}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-white/40 uppercase tracking-wider mb-0.5">Воля</div>
+              <div className="text-teal-300 font-semibold text-sm">{state.will}</div>
+            </div>
           </div>
         </div>
       </header>
 
+      {/* ТЕКСТ СЕКЦИИ И ВЫБОР */}
       {!section ? (
         <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
           Страница потеряна в пространстве.
