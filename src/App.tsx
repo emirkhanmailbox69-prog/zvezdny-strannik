@@ -3,7 +3,7 @@ import { Starfield } from './components/Starfield'
 import { MainMenu } from './screens/MainMenu'
 import { CharacterCreation } from './screens/CharacterCreation'
 import { Game } from './screens/Game'
-import { SECTIONS } from './data/demo-sections'
+import { SECTIONS } from './data/sections'
 import type { GameState, Screen } from './types'
 
 const SAVE_KEY = 'zvezdny_strannik_save_v1'
