@@ -21,14 +21,7 @@ export function Game({ state, section, onChoose, onReset }: Props) {
   }, [state.currentSection])
 
   return (
-    <div
-      className="fixed inset-0 flex flex-col"
-      style={{
-        paddingTop: 'max(env(safe-area-inset-top), 72px)',
-        paddingLeft: 'max(env(safe-area-inset-left), 0px)',
-        paddingRight: 'max(env(safe-area-inset-right), 0px)',
-      }}
-    >
+    <div className="h-full flex flex-col">
       <header className="flex-none bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5">
         <div className="max-w-2xl mx-auto px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
@@ -84,11 +77,9 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
-      {/* min-h-0 — ключевой фикс. Без него flexbox не даёт скроллить */}
       <div
         ref={scrollRef}
         className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
-        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
       >
         <div className="max-w-2xl mx-auto px-4 py-5 space-y-5">
           {!section ? (
@@ -126,14 +117,14 @@ export function Game({ state, section, onChoose, onReset }: Props) {
                         key={i}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => onChoose(c.next)}
-                        className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 active:bg-white/15 hover:border-teal-400/40 p-4 transition-colors flex items-start justify-between gap-3"
+                        className="group w-full text-left rounded-xl border border-teal-400/25 bg-teal-400/[0.07] hover:bg-teal-400/[0.14] active:bg-teal-400/[0.20] transition-colors p-4 flex items-start justify-between gap-3"
                       >
-                        <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
+                        <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-teal-50 break-words">
                           {c.label}
                         </span>
                         <ArrowRight
                           size={16}
-                          className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
+                          className="text-teal-300/70 group-hover:text-teal-200 transition-colors shrink-0 mt-1"
                         />
                       </motion.button>
                     ))}
