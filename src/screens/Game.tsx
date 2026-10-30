@@ -50,7 +50,7 @@ export function Game({ state, section, onChoose, onReset }: Props) {
       <header
         ref={headerRef}
         className="fixed top-0 left-0 right-0 z-30 max-w-2xl mx-auto"
-        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 4px)' }}
       >
         <div className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5">
           <div className="px-4 py-3 space-y-3">
