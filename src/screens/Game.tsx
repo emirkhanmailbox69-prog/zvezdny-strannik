@@ -18,13 +18,20 @@ export function Game({ state, section, onChoose, onReset }: Props) {
   const headerRef = useRef<HTMLElement>(null)
   const [headerHeight, setHeaderHeight] = useState(200)
 
-  // Измеряем реальную высоту шапки — работает на любом устройстве
+    // Измеряем реальную высоту шапки — пересчитываем после загрузки шрифтов
   useLayoutEffect(() => {
     const el = headerRef.current
-    if (el) {
-      setHeaderHeight(el.getBoundingClientRect().height)
-    }
-  }, [state.captain.name, state.captain.stamina, state.ship.weapon, state.ship.defense, state.will, state.luck])
+    if (!el) return
+
+    const measure = () => setHeaderHeight(el.getBoundingClientRect().height)
+
+    measure()
+    document.fonts?.ready.then(measure).catch(() => {})
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   // Скролл в начало при смене секции
   useLayoutEffect(() => {
