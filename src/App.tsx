@@ -114,7 +114,10 @@ export default function App() {
         )}
 
         {screen === 'intro' && (
-          <div className="min-h-full max-w-2xl mx-auto px-4 py-8 flex flex-col justify-center">
+          <div
+  className="min-h-full max-w-2xl mx-auto px-4 pb-8 flex flex-col justify-center"
+  style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 32px)' }}
+>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
