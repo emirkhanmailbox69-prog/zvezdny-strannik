@@ -111,24 +111,24 @@ export function Game({ state, section, onChoose, onReset }: Props) {
                 </button>
               ) : (
                 <div className="space-y-2">
-                  {section.choices?.map((c, i) => (
-                    <motion.button
-                      key={i}
-                      whileHover={{ x: 4 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => onChoose(c.next)}
-                      className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 px-4 py-3 transition-all flex items-center justify-between gap-3"
-                    >
-                      <span className="text-[15px] text-white/90">{c.label}</span>
-                      <ArrowRight size={16} className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0" />
-                    </motion.button>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        )}
-      </div>
+  {section.choices?.map((c, i) => (
+    <motion.button
+      key={i}
+      whileHover={{ x: 4 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => onChoose(c.next)}
+      className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
+    >
+      <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
+        {c.label}
+      </span>
+      <ArrowRight
+        size={16}
+        className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
+      />
+    </motion.button>
+  ))}
+</div>
 
       <GameCard state={state} open={showStatus} onClose={() => setShowStatus(false)} />
     </div>
