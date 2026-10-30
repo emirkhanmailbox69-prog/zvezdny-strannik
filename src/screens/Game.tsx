@@ -21,12 +21,12 @@ export function Game({ state, section, onChoose, onReset }: Props) {
   }, [state.currentSection])
 
   return (
-    <div
+        <div
       className="fixed inset-0 flex flex-col"
       style={{
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingLeft: 'env(safe-area-inset-left)',
-        paddingRight: 'env(safe-area-inset-right)',
+        paddingTop: 'max(env(safe-area-inset-top), 60px)',
+        paddingLeft: 'max(env(safe-area-inset-left), 0px)',
+        paddingRight: 'max(env(safe-area-inset-right), 0px)',
       }}
     >
       {/* HEADER — flex-none, всегда сверху */}
