@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { GameCard } from '../components/GameCard'
@@ -13,10 +13,20 @@ interface Props {
   onReset: () => void
 }
 
-const HEADER_HEIGHT = 200
 export function Game({ state, section, onChoose, onReset }: Props) {
   const [showStatus, setShowStatus] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
+  const [headerHeight, setHeaderHeight] = useState(200)
 
+  // Измеряем реальную высоту шапки — работает на любом устройстве
+  useLayoutEffect(() => {
+    const el = headerRef.current
+    if (el) {
+      setHeaderHeight(el.getBoundingClientRect().height)
+    }
+  }, [state.captain.name, state.captain.stamina, state.ship.weapon, state.ship.defense, state.will, state.luck])
+
+  // Скролл в начало при смене секции
   useLayoutEffect(() => {
     const root = document.getElementById('root')
     if (root) root.scrollTop = 0
@@ -28,16 +38,14 @@ export function Game({ state, section, onChoose, onReset }: Props) {
     return () => clearTimeout(t)
   }, [state.currentSection])
 
-    return (
-    <div className="max-w-2xl mx-auto" style={{ paddingTop: `${HEADER_HEIGHT}px` }}>
+  return (
+    <div className="max-w-2xl mx-auto" style={{ paddingTop: `${headerHeight + 16}px` }}>
       <header
+        ref={headerRef}
         className="fixed top-0 left-0 right-0 z-30 max-w-2xl mx-auto"
-        style={{ paddingTop: 'max(env(safe-area-inset-top), 24px)' }}
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        <div
-          className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
-          style={{ paddingTop: 'max(env(safe-area-inset-top), 60px)' }}
-        >
+        <div className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5">
           <div className="px-4 py-3 space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-sm font-medium text-white/90 uppercase tracking-wider">

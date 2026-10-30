@@ -9,7 +9,13 @@ interface Props {
 
 export function MainMenu({ hasSave, onNewGame, onContinue }: Props) {
   return (
-    <div className="min-h-full flex flex-col items-center justify-center px-6 py-12">
+    <div
+      className="min-h-full flex flex-col items-center justify-center px-6"
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 48px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 48px)',
+      }}
+    >
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
