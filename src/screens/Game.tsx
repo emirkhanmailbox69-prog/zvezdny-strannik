@@ -32,7 +32,7 @@ export function Game({ state, section, onChoose, onReset }: Props) {
       <header className="sticky top-0 z-30">
         <div
           className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
-          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+          style={{ paddingTop: 'max(env(safe-area-inset-top), 60px)' }}
         >
           <div className="px-4 py-3 space-y-3">
             <div className="flex items-center justify-between">
