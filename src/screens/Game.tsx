@@ -13,6 +13,7 @@ interface Props {
   onReset: () => void
 }
 
+const HEADER_HEIGHT = 200
 export function Game({ state, section, onChoose, onReset }: Props) {
   const [showStatus, setShowStatus] = useState(false)
 
@@ -27,9 +28,12 @@ export function Game({ state, section, onChoose, onReset }: Props) {
     return () => clearTimeout(t)
   }, [state.currentSection])
 
-  return (
-    <div className="max-w-2xl mx-auto">
-      <header className="sticky top-0 z-30">
+    return (
+    <div className="max-w-2xl mx-auto" style={{ paddingTop: `${HEADER_HEIGHT}px` }}>
+      <header
+        className="fixed top-0 left-0 right-0 z-30 max-w-2xl mx-auto"
+        style={{ paddingTop: 'max(env(safe-area-inset-top), 24px)' }}
+      >
         <div
           className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
           style={{ paddingTop: 'max(env(safe-area-inset-top), 60px)' }}
