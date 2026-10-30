@@ -18,13 +18,17 @@ export function Game({ state, section, onChoose, onReset }: Props) {
   // Скролл в начало при смене секции
   useEffect(() => {
     const root = document.getElementById('root')
-    if (root) root.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    if (root) {
+      root.scrollTop = 0
+    }
   }, [state.currentSection])
 
   return (
     <div className="min-h-full max-w-2xl mx-auto">
-      {/* STICKY HEADER — плашка прилипает сверху */}
-      <header className="sticky top-0 z-30 bg-[#0a0a12]/80 backdrop-blur-2xl border-b border-white/5">
+      <header
+        className="sticky z-30 bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
+        style={{ top: 'env(safe-area-inset-top)' }}
+      >
         <div className="px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
             <div className="text-sm font-medium text-white/90 uppercase tracking-wider">
@@ -79,8 +83,10 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
-      {/* КОНТЕНТ СЕКЦИИ */}
-      <div className="px-4 py-5 space-y-5">
+      <div
+        className="px-4 py-5 space-y-5"
+        style={{ paddingTop: 'max(env(safe-area-inset-top), 16px)' }}
+      >
         {!section ? (
           <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
             Страница потеряна в пространстве.
@@ -111,24 +117,29 @@ export function Game({ state, section, onChoose, onReset }: Props) {
                 </button>
               ) : (
                 <div className="space-y-2">
-  {section.choices?.map((c, i) => (
-    <motion.button
-      key={i}
-      whileHover={{ x: 4 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => onChoose(c.next)}
-      className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
-    >
-      <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
-        {c.label}
-      </span>
-      <ArrowRight
-        size={16}
-        className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
-      />
-    </motion.button>
-  ))}
-</div>
+                  {section.choices?.map((c, i) => (
+                    <motion.button
+                      key={i}
+                      whileHover={{ x: 4 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => onChoose(c.next)}
+                      className="group w-full text-left rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-teal-400/40 p-4 transition-all flex items-start justify-between gap-3"
+                    >
+                      <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-white/90 break-words">
+                        {c.label}
+                      </span>
+                      <ArrowRight
+                        size={16}
+                        className="text-white/40 group-hover:text-teal-300 transition-colors shrink-0 mt-1"
+                      />
+                    </motion.button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        )}
+      </div>
 
       <GameCard state={state} open={showStatus} onClose={() => setShowStatus(false)} />
     </div>

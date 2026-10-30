@@ -1,8 +1,8 @@
 """
-Чистит sections.json:
-1. Убирает из текста "иди на N", пустые (), лишние знаки
-2. Переписывает "Перейти на раздел N" на нормальные описания
-3. Оставляет список того, что требует ручной правки
+Чистит sections.json v2:
+- Одиночные переходы → "Далее"
+- Множественные → вытаскивает действие из "Если...иди на N"
+- Агрессивнее чистит скобки
 """
 import json
 import re
@@ -11,138 +11,147 @@ SECTIONS_FILE = 'src/data/sections.json'
 
 
 def clean_text(text: str) -> str:
-    # (иди на N) → пусто
-    text = re.sub(r'\s*\(\s*[Ии]ди на \d+[.]?\s*\)', '', text)
-    # "иди на N" → пусто (с точкой или без)
+    # (иди на N) или (иди на N, ...) → пусто
+    text = re.sub(r'\(\s*[Ии]ди на \d+[^)]*\)', '', text)
+    # (Иди на N)
+    text = re.sub(r'\(\s*[Ии]ди на \d+[^)]*\)', '', text)
+    # Голые "иди на N"
     text = re.sub(r'[Ии]ди на \d+[.]?', '', text)
-    # Пустые скобки "()", "( )"
+    # Пустые скобки
     text = re.sub(r'\(\s*\)', '', text)
-    # Пробел перед запятой/точкой
+    # Пробел перед знаком препинания
     text = re.sub(r'\s+([,.;:!?])', r'\1', text)
     # Двойные запятые/точки
     text = re.sub(r',\s*,+', ',', text)
     text = re.sub(r'\.{2,}', '.', text)
-    # Множественные пробелы
+    # Множественные пробелы и пустые строки
     text = re.sub(r'[ \t]+', ' ', text)
-    # Пробелы в начале строк
     text = re.sub(r' *\n *', '\n', text)
-    # Три и больше переносов → два
     text = re.sub(r'\n{3,}', '\n\n', text)
+    # Запятая перед точкой
+    text = re.sub(r',\s*\.', '.', text)
     return text.strip(' .,;:-\n')
 
 
 def extract_action(full_text: str, target: int) -> str | None:
-    """Пытается вытащить описание действия из текста перед "иди на target"."""
-    # Ищем "иди на target" и берём 200 символов до него
     m = re.search(rf'[Ии]ди на {target}\b', full_text)
     if not m:
         return None
 
-    start = max(0, m.start() - 300)
-    fragment = full_text[start:m.start()]
+    before = full_text[:m.start()]
 
-    # Обрезаем по концу предыдущего предложения
-    for sep in ['. ', '! ', '? ', '; ']:
-        idx = fragment.rfind(sep)
-        if idx != -1:
-            fragment = fragment[idx + len(sep):]
-            break
+    # Ищем последнее "Если" в 400 символах до "иди на"
+    lookback = before[-400:] if len(before) > 400 else before
+    if_matches = list(re.finditer(r'[Ее]сли\b', lookback))
+    if if_matches:
+        before = lookback[if_matches[-1].start():]
+    else:
+        # Нет "Если" — берём от последнего ". " / "\n"
+        for sep in ['\n', '. ', '! ', '? ']:
+            idx = before.rfind(sep)
+            if idx != -1:
+                before = before[idx + len(sep):]
+                break
+        else:
+            # Ничего не нашли — берём целиком (обрежется в конце)
+            pass
 
-    # Обрезаем по последнему ", или" / ", либо" / ", а затем"
-    for sep_pat in [r',\s*или\s+', r',\s*либо\s+', r',\s*а\s+затем\s+']:
-        parts = re.split(sep_pat, fragment, flags=re.IGNORECASE)
-        if parts:
-            fragment = parts[-1]
+    # Убираем остатки "иди на N"
+    before = re.sub(r'[Ии]ди на \d+[.]?', '', before).strip()
+    before = before.rstrip(' ,;:')
 
-    fragment = fragment.strip(' "\'«»')
+    # Убираем "Если хочешь/решишь/", "то"
+    before = re.sub(r'^[Ее]сли\s+(?:ты\s+)?(?:хочешь|решишь|решишься)?\s*', '', before)
+    before = re.sub(r',?\s*то\s+', ' ', before, count=1)
 
-    # Убираем "Если хочешь", "Если", "то", "тебе", "можешь"
-    fragment = re.sub(r'^[Ее]сли\s+хочешь,?\s*', '', fragment)
-    fragment = re.sub(r'^[Ее]сли\s+', '', fragment)
-    fragment = re.sub(r'^[Тт]ы\s+можешь\s+', '', fragment)
-    fragment = re.sub(r'^[Тт]ебе\s+', '', fragment)
-    fragment = re.sub(r'^[Мм]ожешь\s+', '', fragment)
-    fragment = re.sub(r',?\s*то\s+', ' ', fragment, count=1)
+    # Убираем начальное "и", "а", "или", "либо"
+    before = re.sub(r'^(?:[Ии]|[Аа]|или|либо)\s+', '', before)
 
-    # Убираем начальные "и", "а", "или", "либо"
-    fragment = re.sub(r'^(?:и|а|или|либо)\s+', '', fragment, flags=re.IGNORECASE)
+    # Заглавная первая
+    if before:
+        before = before[0].upper() + before[1:]
 
-    # Заглавная первая буква
-    if fragment:
-        fragment = fragment[0].upper() + fragment[1:]
+    # Хвостовое "и", "то", "чтобы"
+    before = re.sub(r'\s+(?:и|то|чтобы)\s*$', '', before, flags=re.IGNORECASE)
 
-    # Убираем хвостовые "и", "то", "чтобы"
-    fragment = re.sub(r'\s+(?:и|то|чтобы|если)\s*$', '', fragment, flags=re.IGNORECASE)
+    before = before.strip(' .,;:')
 
-    # Обрезаем до 90 символов по границе слова
-    if len(fragment) > 90:
-        fragment = fragment[:87]
-        last_space = fragment.rfind(' ')
+    if len(before) < 5:
+        return None
+    if len(before) > 100:
+        before = before[:97]
+        last_space = before.rfind(' ')
         if last_space > 60:
-            fragment = fragment[:last_space]
-        fragment += '…'
+            before = before[:last_space]
+        before += '…'
 
-    fragment = fragment.strip(' .,;:-')
-    return fragment if len(fragment) >= 4 else None
+    return before.strip(' .,;:')
 
 
 def main():
     with open(SECTIONS_FILE, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    manual_review = []
-    fixed_choices = 0
-    cleaned_texts = 0
+    manual = []
+    single_auto = 0
+    multi_auto = 0
+    cleaned = 0
 
     for s in data['sections']:
         raw = s.get('text', '')
-        cleaned = clean_text(raw)
-        if cleaned != raw:
-            cleaned_texts += 1
-        s['text'] = cleaned
+        cleaned_text = clean_text(raw)
+        if cleaned_text != raw:
+            cleaned += 1
+        s['text'] = cleaned_text
 
         choices = s.get('choices') or []
         if not choices:
             continue
 
+        # Проверяем, все ли placeholder
+        all_placeholder = all(
+            re.match(r'^Перейти на (раздел|секцию)\s+\d+$', ch.get('label', ''))
+            for ch in choices
+        )
+
+        # Одиночный placeholder → "Далее"
+        if len(choices) == 1 and all_placeholder:
+            ch = choices[0]
+            s['choices'] = [{'label': 'Далее', 'next': ch['next']}]
+            single_auto += 1
+            continue
+
+        if not all_placeholder:
+            continue  # уже размечено руками
+
+        # Множественные → парсим
         new_choices = []
         for ch in choices:
-            label = ch.get('label', '')
-            next_id = ch['next']
-
-            is_placeholder = bool(re.match(
-                r'^Перейти на (раздел|секцию)\s+\d+$', label
-            ))
-
-            if not is_placeholder:
-                new_choices.append(ch)
-                continue
-
-            action = extract_action(raw, next_id)
+            action = extract_action(raw, ch['next'])
             if action:
-                new_choices.append({'label': action, 'next': next_id})
-                fixed_choices += 1
+                new_choices.append({'label': action, 'next': ch['next']})
+                multi_auto += 1
             else:
-                new_choices.append({'label': '…', 'next': next_id})
-                manual_review.append({
+                new_choices.append({'label': f'Выбор {len(new_choices)+1}', 'next': ch['next']})
+                manual.append({
                     'section': s['id'],
-                    'next': next_id,
-                    'text_preview': cleaned[:80],
+                    'next': ch['next'],
+                    'preview': cleaned_text[-100:] if len(cleaned_text) > 100 else cleaned_text,
                 })
-
         s['choices'] = new_choices
 
     with open(SECTIONS_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-    print(f'✅ Текстов очищено: {cleaned_texts}')
-    print(f'✅ Выборов переписано: {fixed_choices}')
-    print(f'⚠️  Осталось на ручную правку: {len(manual_review)}')
-    if manual_review:
+    print(f'✅ Текстов очищено: {cleaned}')
+    print(f'✅ Одиночных → "Далее": {single_auto}')
+    print(f'✅ Множественных → переписано: {multi_auto}')
+    print(f'⚠️  Осталось непонятных: {len(manual)}')
+    if manual:
         print()
-        print('Список (секция → куда ведёт):')
-        for item in manual_review[:40]:
-            print(f"  {item['section']} → {item['next']}  |  {item['text_preview']}…")
+        for item in manual[:30]:
+            print(f"  секция {item['section']} → {item['next']}")
+            print(f"    конец текста: ...{item['preview']}")
 
 
 if __name__ == '__main__':
