@@ -2,17 +2,23 @@
   "name": "Звёздный Странник",
   "short_name": "Странник",
   "description": "Книга-игра. Космическая RPG.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/zvezdny-strannik/",
+  "scope": "/zvezdny-strannik/",
   "display": "standalone",
   "background_color": "#0a0a12",
   "theme_color": "#0a0a12",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBhMGExMiIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTUwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0ZWNkYzQiIHN0cm9rZS13aWR0aD0iOCIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iNjAiIGZpbGw9IiM0ZWNkYzQiLz48Y2lyY2xlIGN4PSI0MDYiIGN5PSIyNTYiIHI9IjEwIiBmaWxsPSIjZmZmIi8+PC9zdmc+",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "/zvezdny-strannik/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/zvezdny-strannik/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
