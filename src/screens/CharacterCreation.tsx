@@ -61,6 +61,7 @@ export function CharacterCreation({ onStart, onBack }: Props) {
       will: 3,
       ship: { weapon: shipWeapon!, defense: shipDefense! },
       history: [],
+      status: 'playing',
     })
   }
 

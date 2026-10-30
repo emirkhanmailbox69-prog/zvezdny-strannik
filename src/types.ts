@@ -1,4 +1,4 @@
-export type Screen = 'menu' | 'create' | 'game'
+export type Screen = 'menu' | 'create' | 'intro' | 'game'
 
 export interface Character {
   name: string

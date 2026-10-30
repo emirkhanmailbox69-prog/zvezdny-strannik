@@ -1,4 +1,4 @@
-import type { CheckSpec, CombatSpec, Enemy, GameState } from '../types'
+import type { CheckSpec, Enemy, GameState } from '../types'
 
 export function rollDie(): number {
   return Math.floor(Math.random() * 6) + 1
