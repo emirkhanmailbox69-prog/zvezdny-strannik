@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, RotateCcw } from 'lucide-react'
 import { GameCard } from '../components/GameCard'
 import { CheckScreen } from './CheckScreen'
-import type { GameState, Section } from '../types'
 import { CombatScreen } from './CombatScreen'
+import type { GameState, Section } from '../types'
 
 interface Props {
   state: GameState
@@ -16,20 +16,20 @@ interface Props {
 export function Game({ state, section, onChoose, onReset }: Props) {
   const [showStatus, setShowStatus] = useState(false)
 
-  // Скролл в начало при смене секции
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = document.getElementById('root')
     if (root) root.scrollTop = 0
-    requestAnimationFrame(() => {
+    window.scrollTo(0, 0)
+    const t = setTimeout(() => {
       if (root) root.scrollTop = 0
-    })
+      window.scrollTo(0, 0)
+    }, 50)
+    return () => clearTimeout(t)
   }, [state.currentSection])
 
   return (
     <div className="max-w-2xl mx-auto">
-      {/* STICKY HEADER — прилипает к верху #root */}
       <header className="sticky top-0 z-30">
-        {/* Внутренний слой: фон+блюр, padding-top = safe-area (чёлка) */}
         <div
           className="bg-[#0a0a12]/85 backdrop-blur-2xl border-b border-white/5"
           style={{ paddingTop: 'env(safe-area-inset-top)' }}
@@ -89,7 +89,6 @@ export function Game({ state, section, onChoose, onReset }: Props) {
         </div>
       </header>
 
-      {/* КОНТЕНТ — обычный поток, скроллится вместе с #root */}
       <div className="px-4 py-5 space-y-5">
         {!section ? (
           <div className="rounded-xl border border-red-400/30 bg-red-400/5 p-4 text-red-300 text-sm">
@@ -97,15 +96,15 @@ export function Game({ state, section, onChoose, onReset }: Props) {
             <button onClick={onReset} className="ml-2 underline">Начать заново</button>
           </div>
         ) : section.type === 'check' && section.check ? (
-  <CheckScreen state={state} section={section} onChoose={onChoose} />
-) : section.type === 'combat' && section.combat ? (
-  <CombatScreen
-    state={state}
-    section={section}
-    onWin={onChoose}
-    onLose={onReset}
-  />
-) : (
+          <CheckScreen state={state} section={section} onChoose={onChoose} />
+        ) : section.type === 'combat' && section.combat ? (
+          <CombatScreen
+            state={state}
+            section={section}
+            onWin={onChoose}
+            onLose={onReset}
+          />
+        ) : (
           <AnimatePresence mode="wait">
             <motion.div
               key={state.currentSection}
@@ -122,7 +121,7 @@ export function Game({ state, section, onChoose, onReset }: Props) {
               {section.ending ? (
                 <button
                   onClick={onReset}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-400/15 border border-teal-400/40 text-teal-200 px-5 py-4 hover:bg-teal-400/25 transition-colors font-medium"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-400/20 border border-teal-400/50 text-teal-100 px-5 py-4 hover:bg-teal-400/30 active:bg-teal-400/35 transition-colors font-medium"
                 >
                   <RotateCcw size={16} /> Начать заново
                 </button>
@@ -133,14 +132,14 @@ export function Game({ state, section, onChoose, onReset }: Props) {
                       key={i}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => onChoose(c.next)}
-                      className="group w-full text-left rounded-xl border border-teal-400/40 bg-teal-400/15 hover:bg-teal-400/25 active:bg-teal-400/30 px-5 py-4 transition-colors font-medium flex items-start justify-between gap-3"
+                      className="group w-full text-left rounded-xl border border-teal-400/50 bg-teal-400/20 hover:bg-teal-400/30 active:bg-teal-400/35 px-5 py-4 transition-colors font-medium flex items-start justify-between gap-3"
                     >
-                      <span className="flex-1 min-w-0 text-[15px] leading-relaxed text-teal-200 break-words">
+                      <span className="flex-1 min-w-0 text-base leading-relaxed text-teal-100 break-words">
                         {c.label}
                       </span>
                       <ArrowRight
                         size={16}
-                        className="text-teal-200/60 group-hover:text-teal-100 transition-colors shrink-0 mt-1"
+                        className="text-teal-100/70 group-hover:text-teal-50 transition-colors shrink-0 mt-1"
                       />
                     </motion.button>
                   ))}

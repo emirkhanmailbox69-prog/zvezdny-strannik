@@ -10,6 +10,12 @@ import type { GameState, Screen } from './types'
 
 const SAVE_KEY = 'zvezdny_strannik_save_v2'
 
+const PRIMARY_BTN =
+  'w-full flex items-center justify-center gap-2 rounded-xl bg-teal-400/20 border border-teal-400/50 text-teal-100 px-5 py-4 hover:bg-teal-400/30 active:bg-teal-400/35 transition-colors font-medium'
+
+const SECONDARY_BTN =
+  'w-full rounded-xl border border-white/10 bg-white/5 text-white/80 px-6 py-3 hover:bg-white/10 transition-colors'
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu')
   const [state, setState] = useState<GameState | null>(null)
@@ -125,10 +131,7 @@ export default function App() {
 
 Удачи, космический странник!`}
               </p>
-              <button
-                onClick={enterGame}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-400/15 border border-teal-400/40 text-teal-200 px-5 py-4 hover:bg-teal-400/25 transition-colors font-medium"
-              >
+              <button onClick={enterGame} className={PRIMARY_BTN}>
                 В путь
               </button>
             </motion.div>
@@ -148,16 +151,10 @@ export default function App() {
                 «Звёздный Странник» больше не отзовётся на зов. Но звёзды ждут снова.
               </p>
               <div className="space-y-2 pt-4">
-                <button
-                  onClick={startNew}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-teal-400/15 border border-teal-400/40 text-teal-200 px-6 py-3 hover:bg-teal-400/25 transition-colors"
-                >
+                <button onClick={startNew} className={PRIMARY_BTN}>
                   <RotateCcw size={16} /> Начать заново
                 </button>
-                <button
-                  onClick={reset}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 text-white/80 px-6 py-3 hover:bg-white/10 transition-colors"
-                >
+                <button onClick={reset} className={SECONDARY_BTN}>
                   В главное меню
                 </button>
               </div>
@@ -174,16 +171,10 @@ export default function App() {
                 «Звёздный Странник» снова на Земле. Твоё путешествие завершено.
               </p>
               <div className="space-y-2 pt-4">
-                <button
-                  onClick={startNew}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-teal-400/15 border border-teal-400/40 text-teal-200 px-6 py-3 hover:bg-teal-400/25 transition-colors"
-                >
+                <button onClick={startNew} className={PRIMARY_BTN}>
                   <RotateCcw size={16} /> Новое путешествие
                 </button>
-                <button
-                  onClick={reset}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 text-white/80 px-6 py-3 hover:bg-white/10 transition-colors"
-                >
+                <button onClick={reset} className={SECONDARY_BTN}>
                   В главное меню
                 </button>
               </div>
